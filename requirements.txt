@@ -1,0 +1,14 @@
+# Core dependencies
+torch>=1.7.0
+torchvision>=0.8.1
+torchxrayvision>=0.0.38
+numpy>=1.19.0
+pandas>=1.1.0
+scikit-learn>=0.24.0
+matplotlib>=3.3.0
+tqdm>=4.50.0
+Pillow>=8.0.0
+
+# Optional dependencies
+python-dotenv>=0.15.0  # For loading environment variables
+jupyter>=1.0.0  # For notebook support
