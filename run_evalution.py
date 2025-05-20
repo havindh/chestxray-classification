@@ -19,9 +19,9 @@ from evaluation.metrics import evaluate_predictions
 from evaluation.visualization import plot_results, plot_roc_curves, plot_pr_curves
 from utils.inference import run_inference
 
-# Setup logging
+# # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
@@ -73,11 +73,11 @@ def main():
         plot_roc_curves(y_true, y_pred, Config.target_labels, Config.output_path)
         plot_pr_curves(y_true, y_pred, Config.target_labels, Config.output_path)
         
-        logger.info("Evaluation completed successfully")
-        logger.info(f"Results saved to {Config.output_path}")
+        print("Evaluation completed successfully")
+        print(f"Results saved to {Config.output_path}")
     
     except Exception as e:
-        logger.error(f"Evaluation failed: {e}")
+        print(f"Evaluation failed: {e}")
         import traceback
         traceback.print_exc()
         return 1
