@@ -56,14 +56,16 @@ def load_and_prepare_data(config, pathologies):
         # Find indices for target labels
         label_indices = [pathologies.index(label) for label in config.target_labels]
         
-        # Create test set with balanced classes
-        test_df = create_balanced_test_set(metadata_df, label_indices, config)
         
-        return test_df, label_indices
+        return metadata_df, label_indices
     
     except Exception as e:
         logger.error(f"Failed to prepare data: {e}")
         raise
+def get_test_set(metadata_df, label_indices, config):
+  # Create test set with balanced classes
+  test_df = create_balanced_test_set(metadata_df, label_indices, config)
+  return test_df
 
 def create_balanced_test_set(metadata_df, label_indices, config):
     """
