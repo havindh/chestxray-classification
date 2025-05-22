@@ -2,12 +2,8 @@
 Image preprocessing utilities for X-ray images.
 """
 
-import torch
 import torchxrayvision as xrv
-from torchvision import transforms
-from PIL import Image
-import logging
-import numpy as np
+import skimage, torch, torchvision
 
 logger = logging.getLogger(__name__)
 
@@ -23,22 +19,31 @@ def preprocess_xray(img_path, img_size=224):
     torch.Tensor: Preprocessed image tensor of shape [1, img_size, img_size]
     """
     try:
-       # Load as PIL grayscale image
-       img = Image.open(img_path).convert('L')
-       
-       # Convert to numpy array for xrv.datasets.normalize
-       img = np.array(img)
-       
-       # Normalize using TorchXRayVision
-       img = xrv.datasets.normalize(img, 255)
-       
-       # Convert to tensor and add channel dimension
-       img = torch.from_numpy(img).float().unsqueeze(0)
-       
-       # Resize
-       img = transforms.Resize((img_size, img_size))(img)
-       
-       return img
+       # Prepare the image:
+        img = skimage.io.imread(img_path)
+        # convert 8-bit image to [-1024, 1024] range
+        img = xrv.datasets.normalize(img, 255) 
+        # img = img.mean(2)[None, ...] # Make single color channel
+        # Make single color channel - handle both RGB and grayscale
+        if len(img.shape) == 3:
+            img = img.mean(2)[None, ...]  # RGB to grayscale: (H, W, 3) -> (1, H, W)
+        else:
+            img = img[None, ...]  # Already grayscale: (H, W) -> (1, H, W)
+
+        # Apply TorchXRayVision transforms
+        transform = torchvision.transforms.Compose([
+            xrv.datasets.XRayCenterCrop(),
+            xrv.datasets.XRayResizer(224)
+        ])
+        
+        img = transform(img)
+        img = torch.from_numpy(img)
+        
+        # Add batch dimension: (1, H, W) -> (1, 1, H, W)
+        if len(img.shape) == 3:
+            img = img.unsqueeze(0)
+        
+        return img
     except Exception as e:
        logger.error(f"Failed to preprocess image {img_path}: {e}")
        raise
