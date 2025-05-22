@@ -61,7 +61,7 @@ def run_inference(test_df, model_mimic, model_chex, label_indices, config):
     logger.info(f"Running inference on {len(test_df)} images")
     
     for idx, row in tqdm(test_df.iterrows(), total=len(test_df), desc="Processing"):
-        img_path = os.path.join(config.image_path, row["Image Index"])
+        img_path = os.path.join(config.image_path, str(row["Image Index"]))
         
         try:
             # Preprocess image
