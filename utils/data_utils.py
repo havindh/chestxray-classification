@@ -48,15 +48,24 @@ def load_and_prepare_data(config, pathologies):
         logger.info(f"Filtered to {len(metadata_df)} entries with available images")
         
         # Encode labels based on pathologies list
-        metadata_df["encoded_labels"] = metadata_df.apply(
-            lambda row: encode_labels(row, pathologies), axis=1
+        metadata_df["encoded_array"] = metadata_df["encoded_labels"].apply(
+            lambda x: np.array(x.strip('[]').split(',')).astype(int)
         )
-        metadata_df["encoded_array"] = metadata_df["encoded_labels"].apply(np.array)
         
         # Find indices for target labels
         label_indices = [pathologies.index(label) for label in config.target_labels]
         
-        
+        # Helper to check if all target diseases are negative
+        def is_all_target_negative(row):
+            return sum(row[label_indices]) == 0
+
+        metadata_df["is_all_target_negative"] = metadata_df["encoded_array"].apply(
+            lambda row: is_all_target_negative(row)
+        )
+        # Create separate columns using your label_indices dictionary
+        for disease, idx in label_indices.items():
+            metadata_df[disease] = metadata_df["encoded_array"].apply(np.array).apply(lambda x: x[idx])
+        metadata_df.to_csv(os.path.join(config.output_path, "nih_metadata.csv"), index=False)
         return metadata_df, label_indices
     
     except Exception as e:
