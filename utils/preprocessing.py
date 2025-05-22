@@ -23,26 +23,22 @@ def preprocess_xray(img_path, img_size=224):
     torch.Tensor: Preprocessed image tensor of shape [1, img_size, img_size]
     """
     try:
-        # Load as grayscale 
-        # This is a PIL image we  should convert it to numpy arrrays
-        img = Image.open(img_path).convert('L')
-        img = np.array(img)
-        # Use TorchXRayVision's normalization function
-        # This handles the conversion to the expected [-1024, 1024] range
-        img = xrv.datasets.normalize(img, 255)
-        
-        #now that you are done normalizing you need to cover image back to a tensor
-        img = torch.from_numpy(img)
-
-        # Resize to expected dimensions
-        img = transforms.Resize((img_size, img_size))(img)
-        
-        # Convert to tensor - shape will be [1, img_size, img_size]
-        # When applied after, it doesn't rescale to [0,1] 
-        # because it already receives a normalized tensor, not a PIL Image with 0-255 values
-        img = transforms.ToTensor()(img)
-        
-        return img
+       # Load as PIL grayscale image
+       img = Image.open(img_path).convert('L')
+       
+       # Convert to numpy array for xrv.datasets.normalize
+       img = np.array(img)
+       
+       # Normalize using TorchXRayVision
+       img = xrv.datasets.normalize(img, 255)
+       
+       # Convert to tensor and add channel dimension
+       img = torch.from_numpy(img).float().unsqueeze(0)
+       
+       # Resize
+       img = transforms.Resize((img_size, img_size))(img)
+       
+       return img
     except Exception as e:
-        logger.error(f"Failed to preprocess image {img_path}: {e}")
-        raise
+       logger.error(f"Failed to preprocess image {img_path}: {e}")
+       raise
