@@ -31,6 +31,9 @@ def preprocess_xray(img_path, img_size=224):
         # This handles the conversion to the expected [-1024, 1024] range
         img = xrv.datasets.normalize(img, 255)
         
+        #now that you are done normalizing you need to cover image back to a tensor
+        img = torch.from_numpy(img)
+
         # Resize to expected dimensions
         img = transforms.Resize((img_size, img_size))(img)
         
