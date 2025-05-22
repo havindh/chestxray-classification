@@ -4,6 +4,7 @@ Image preprocessing utilities for X-ray images.
 
 import torchxrayvision as xrv
 import skimage, torch, torchvision
+import logging
 
 logger = logging.getLogger(__name__)
 
