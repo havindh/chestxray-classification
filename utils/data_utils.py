@@ -92,14 +92,6 @@ def create_balanced_test_set(metadata_df, label_indices, config):
     def is_positive(label_index):
         return metadata_df["encoded_array"].apply(lambda x: x[label_index] == 1)
     
-    # Helper to check if all target diseases are negative
-    def is_all_target_negative(row):
-        return sum(row[label_indices]) == 0
-    
-    metadata_df["is_all_target_negative"] = metadata_df["encoded_array"].apply(
-        lambda row: is_all_target_negative(row)
-    )
-    
     # Sample positive examples for each disease
     # Sample 400 positive per disease
     positive_samples = []
