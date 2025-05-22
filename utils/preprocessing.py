@@ -34,7 +34,7 @@ def preprocess_xray(img_path, img_size=224):
         # Apply TorchXRayVision transforms
         transform = torchvision.transforms.Compose([
             xrv.datasets.XRayCenterCrop(),
-            xrv.datasets.XRayResizer(224)
+            xrv.datasets.XRayResizer(img_size)
         ])
         
         img = transform(img)
